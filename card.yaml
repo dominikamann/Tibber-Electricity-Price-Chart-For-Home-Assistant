@@ -1,0 +1,64 @@
+type: custom:apexcharts-card
+experimental:
+  color_threshold: true
+all_series_config:
+  unit: Cent/kWh
+apex_config:
+  grid:
+    show: true
+    borderColor: '#E0E0E0'
+  chart:
+    height: 250px
+  tooltip:
+    enabled: true
+    followCursor: false
+    x:
+      show: false
+    fixed:
+      enabled: true
+header:
+  show: true
+  title: Strompreis
+  show_states: true
+  colorize_states: true
+  standard_format: false
+graph_span: 48h
+now:
+  show: true
+  color: 9E9E9E
+span:
+  start: day
+series:
+  - entity: sensor.tibber_prices
+    show:
+      in_header: before_now
+      name_in_header: false
+    color_threshold:
+      - value: 0
+        color: 4DD0E1
+      - value: 10
+        color: 26A69A
+      - value: 15
+        color: 4CAF50
+      - value: 20
+        color: 7CB342
+      - value: 25
+        color: FBC02D
+      - value: 30
+        color: EF6C00
+      - value: 40
+        color: B71C1C
+    type: line
+    curve: stepline
+    extend_to: false
+    stroke_width: 4
+    float_precision: 2
+    data_generator: |
+      const noon = new Date()
+      noon.setHours(0, 0, 0, 0)
+      const prices = entity.attributes.today.concat(entity.attributes.tomorrow);
+      const data = [];
+      for(let i = 0; i < prices.length; i++) {
+        data.push([noon.getTime() + i * 1000 * 3600, prices[i].total * 100])
+      }
+      return data;
