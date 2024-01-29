@@ -10,7 +10,7 @@ A way how you can view the current and future electricity price of your Tibber.c
  3. Copy in the content of the  `sensors.yaml` file of this repository into your newly created file
  4. Replace `ADD_YOUR_TOKEN_HERE` with your Tibber Developer Token (https://developer.tibber.com/)
  5. Install https://github.com/RomRider/apexcharts-card over HACS
- 6. Restart your Home Assitant instance
+ 6. Restart your Home Assistant instance
  7. Go to any dashboard you wish, add a new card and paste in the code of the `card.yaml`file
 
 ![grafik](https://github.com/dominikamann/Tibber-Electricity-Price-Chart-For-Home-Assistant/assets/29973737/6d7381ab-cca9-4efa-9425-faa2ad59eed0)
