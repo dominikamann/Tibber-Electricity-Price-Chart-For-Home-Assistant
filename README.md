@@ -16,5 +16,5 @@ A way how you can view the current and future electricity price of your Tibber.c
 ![grafik](https://github.com/dominikamann/Tibber-Electricity-Price-Chart-For-Home-Assistant/assets/29973737/6d7381ab-cca9-4efa-9425-faa2ad59eed0)
 
 
-Many thanks to the community ofhttps://community.home-assistant.io/t/tibber-schedul-prices-upcoming-24-hours-prices/391565 who did all the work. I only documented the result in git to make it easily accessible for everyone.
+Many thanks to the community of https://community.home-assistant.io/t/tibber-schedul-prices-upcoming-24-hours-prices/391565 who did all the work. I only documented the result in git to make it easily accessible for everyone.
 
