@@ -84,4 +84,6 @@ It uses [Machine-Learning-Based PV Forecast](https://github.com/dominikamann/ha-
 <sub>Original idea: [BerriJ](https://community.home-assistant.io/u/berrij/summary) in the
 [Home Assistant community](https://community.home-assistant.io/t/tibber-schedul-prices-upcoming-24-hours-prices/391565).</sub>
 
+---
+
 <p align="center">Proudly provided by <a href="https://amannlabs.eu">amannlabs.eu</a></p>
