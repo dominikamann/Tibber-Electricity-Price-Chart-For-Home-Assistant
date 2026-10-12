@@ -283,8 +283,8 @@ series:
         .map(r => [new Date(r.time).getTime() + 30 * 60000, r[key] / 1000])
         .filter(p => p[0] > last);
       return quarter.concat(hourly);
-  # Actual PV production. Replace with your PV power sensor (in W; drop the transform if it is in kW).
-  - entity: sensor.YOUR_PV_POWER
+  # Actual PV production ("Erzeugung aktuell" of the PV forecast integration, in W)
+  - entity: sensor.pv_forecast_total_erzeugung_aktuell
     name: PV tatsächlich
     yaxis_id: pv
     unit: kW

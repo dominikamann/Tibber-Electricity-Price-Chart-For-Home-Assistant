@@ -80,11 +80,13 @@ Sie nutzt [Machine-Learning-Based PV Forecast](https://github.com/dominikamann/h
 
  1. Den Preis-Chart wie oben beschrieben einrichten
  2. [Machine-Learning-Based PV Forecast](https://github.com/dominikamann/ha-machine-learning-based-pv-forecast) installieren und einrichten
+    (ab Version 0.3.1; ihr Sensor *Erzeugung aktuell* liefert die Linie für die tatsächliche Produktion)
  3. Den Inhalt von `card-pv.de.yaml` (englische Beschriftung: `card-pv.yaml`) in eine neue Karte einfügen
- 4. `sensor.YOUR_PV_POWER` durch deinen PV-Leistungssensor ersetzen (in W; ist er in kW, die Zeile `transform` löschen)
- 5. Die Karte nutzt `sensor.pv_forecast_total_prognoseverlauf` (deutsche Home-Assistant-Sprache). Heißt die
-    Entität bei dir anders, etwa `sensor.pv_forecast_total_forecast_curve` bei englischer Sprache, entsprechend
-    anpassen. Statt der Summe kannst du auch die Kurve einer einzelnen Anlage verwenden.
+ 4. Die Karte nutzt die Summe aller Anlagen: `sensor.pv_forecast_total_prognoseverlauf` und
+    `sensor.pv_forecast_total_erzeugung_aktuell` (deutsche Home-Assistant-Sprache). Heißen die Entitäten bei dir
+    anders, etwa `sensor.pv_forecast_total_forecast_curve` und `sensor.pv_forecast_total_production_now` bei
+    englischer Sprache, entsprechend anpassen. Statt der Summe kannst du auch die Sensoren einer einzelnen Anlage
+    verwenden.
 
 ---
 

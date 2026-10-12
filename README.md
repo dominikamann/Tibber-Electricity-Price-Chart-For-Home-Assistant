@@ -79,10 +79,12 @@ It uses [Machine-Learning-Based PV Forecast](https://github.com/dominikamann/ha-
 
  1. Set up the price chart as described above
  2. Install and configure [Machine-Learning-Based PV Forecast](https://github.com/dominikamann/ha-machine-learning-based-pv-forecast)
+    (version 0.3.1 or later; its *Production now* sensor provides the actual line)
  3. Paste the code of `card-pv.yaml` (German labels: `card-pv.de.yaml`) into a new card
- 4. Replace `sensor.YOUR_PV_POWER` with your PV power sensor (in W; if it is in kW, remove the `transform` line)
- 5. If your forecast entity is not called `sensor.pv_forecast_total_forecast_curve` (it depends on your Home
-    Assistant language, in German it is `sensor.pv_forecast_total_prognoseverlauf`), adjust it. Use the curve of a single plant instead of the total if you like.
+ 4. The card uses the total of all plants: `sensor.pv_forecast_total_forecast_curve` and
+    `sensor.pv_forecast_total_production_now`. The names depend on your Home Assistant language (in German
+    `sensor.pv_forecast_total_prognoseverlauf` and `sensor.pv_forecast_total_erzeugung_aktuell`); adjust them if
+    yours differ. Use the sensors of a single plant instead of the total if you like.
 
 ---
 
