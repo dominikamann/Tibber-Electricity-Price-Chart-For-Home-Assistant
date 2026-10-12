@@ -45,4 +45,7 @@ The curve shows the median forecast (P50): 15-minute values for the next 24 hour
 
 Many thanks to the community of https://community.home-assistant.io/t/tibber-schedul-prices-upcoming-24-hours-prices/391565 who did all the initial work to achieve this. Especially to BerriJ (https://community.home-assistant.io/u/berrij/summary) who published the original code for it.
 
+---
+
+
 <p align="center">Proudly provided by <a href="https://amannlabs.eu">amannlabs.eu</a></p>
