@@ -292,7 +292,9 @@ series:
         .map(r => [new Date(r.time).getTime() + 30 * 60000, r[key] / 1000])
         .filter(p => p[0] > last);
       return quarter.concat(hourly);
-  # Actual PV production ("Production now" of the PV forecast integration, in W)
+  # Actual PV production: today's 15-minute values, the hours before from the review of past
+  # days and the live value ("Production now" of the PV forecast integration, in W).
+  # Read from states, no history request, so the card does not wait for the database.
   - entity: sensor.pv_forecast_total_production_now
     name: PV actual
     yaxis_id: pv
@@ -300,15 +302,23 @@ series:
     color: 1E88E5
     type: line
     stroke_width: 2
-    extend_to: now
+    extend_to: false
     float_precision: 2
-    transform: return x / 1000;
-    group_by:
-      func: avg
-      duration: 15min
     show:
       in_header: false
       legend_value: false
+    data_generator: |
+      const curve = hass.states['sensor.pv_forecast_total_forecast_curve'];
+      const a = (curve && curve.attributes) || {};
+      const today = (a.actual || []).map(r => [new Date(r.time).getTime() + 7.5 * 60000, r.w / 1000]);
+      const from = today.length ? today[0][0] - 7.5 * 60000 : Date.now();
+      const before = (a.review || []).flatMap(d => d.hourly || [])
+        .map(r => [new Date(r.time).getTime() + 30 * 60000, r.w / 1000])
+        .filter(p => p[0] < from);
+      const data = before.concat(today).sort((x, y) => x[0] - y[0]);
+      const now = parseFloat(entity.state);
+      if (!isNaN(now)) data.push([Date.now(), now / 1000]);
+      return data;
   # Header only: current price and average of the cheapest window.
   # Keep these last: series hidden from the chart shift the y-axis scaling otherwise.
   - entity: sensor.tibber_price
@@ -316,12 +326,14 @@ series:
     yaxis_id: price
     unit: ct/kWh
     color: 9E9E9E
-    transform: return x * 100;
     float_precision: 2
     show:
       in_chart: false
+    # From the current state: no history request, so the card does not wait for the database
+    data_generator: |
+      const v = parseFloat(entity.state);
+      return isNaN(v) ? [] : [[Date.now(), v * 100]];
   - entity: sensor.tibber_cheapest_window
-    attribute: average
     name: Cheapest window Ø
     yaxis_id: price
     unit: ct/kWh
@@ -329,6 +341,9 @@ series:
     float_precision: 2
     show:
       in_chart: false
+    data_generator: |
+      const v = parseFloat(entity.attributes.average);
+      return isNaN(v) ? [] : [[Date.now(), v]];
   # Optional: base load of your house. Where the PV curve is above it, the price hardly matters.
   # - entity: sensor.pv_forecast_total_forecast_curve
   #   name: Base load

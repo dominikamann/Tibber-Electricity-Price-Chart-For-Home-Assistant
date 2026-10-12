@@ -197,15 +197,20 @@ series:
     name: Aktuell
     unit: ct/kWh
     color: 9E9E9E
-    transform: return x * 100;
     float_precision: 2
     show:
       in_chart: false
+    # From the current state: no history request, so the card does not wait for the database
+    data_generator: |
+      const v = parseFloat(entity.state);
+      return isNaN(v) ? [] : [[Date.now(), v * 100]];
   - entity: sensor.tibber_cheapest_window
-    attribute: average
     name: Günstigstes Fenster Ø
     unit: ct/kWh
     color: 43A047
     float_precision: 2
     show:
       in_chart: false
+    data_generator: |
+      const v = parseFloat(entity.attributes.average);
+      return isNaN(v) ? [] : [[Date.now(), v]];
