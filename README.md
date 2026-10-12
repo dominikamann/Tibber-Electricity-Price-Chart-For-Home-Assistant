@@ -1,7 +1,7 @@
 # Tibber-Electricity-Price-Chart-For-Home-Assistant
 A way how you can view the current and future electricity price of your Tibber.com contract in Home Assistant.
 
-![grafik](https://github.com/dominikamann/Tibber-Electricity-Price-Chart-For-Home-Assistant/assets/29973737/d9213327-889f-41d5-8e90-c5fbcce6707d)
+<img src="images/card.png" alt="Price chart" width="480">
 
 - **15-minute prices** (`QUARTER_HOURLY`), matching the quarter-hourly day-ahead market. Every price is
   plotted at its own `startsAt` time, so the chart also stays correct on daylight-saving days.
@@ -34,8 +34,6 @@ A way how you can view the current and future electricity price of your Tibber.c
 If your `configuration.yaml` already has a `recorder:` section with `exclude:`, Home Assistant reports a
 conflict. Then move the `recorder:` part of the package into your existing `exclude:`.
 
-![grafik](https://github.com/dominikamann/Tibber-Electricity-Price-Chart-For-Home-Assistant/assets/29973737/6d7381ab-cca9-4efa-9425-faa2ad59eed0)
-
 ### Entities
 
 | Entity | Description |
@@ -56,16 +54,20 @@ Everything else works with both.
 
 Remove the old `Tibber Prices` REST sensor (and the `sensor: !include sensors.yaml` line if nothing else
 uses it), then follow the steps above. The old entity `sensor.tibber_prices` is replaced by
-`sensor.tibber_price` and `sensor.tibber_price_data`; update automations that used it.
+`sensor.tibber_price` and `sensor.tibber_price_data`; update automations, dashboards and the Energy
+dashboard (*Settings → Dashboards → Energy*, price of the grid consumption) if they used it.
 
 ## Variant: price + PV forecast
 
 `card-pv.yaml` shows the estimated PV production next to the price (right axis, kW). An expensive hour is
 no problem when plenty of sun is coming.
 
-- PV forecast (median) as an area, the optimistic forecast (P90) as a pale area behind it and the
+<img src="images/card-pv.png" alt="Price chart with PV forecast" width="340">
+
+- PV in blue, so it does not mix with the price colours
+- PV forecast (median) as a light blue area, the optimistic forecast (P90) as a pale area behind it and the
   pessimistic one (P10) as a dashed line
-- Actual PV production of the last hours on top, so you see how well the forecast fits today
+- Actual PV production of the last hours as a darker blue line, so you see how well the forecast fits today
 - Optional: a base load line for your house (commented out at the end of the card)
 
 It uses [Machine-Learning-Based PV Forecast](https://github.com/dominikamann/ha-machine-learning-based-pv-forecast):
@@ -79,9 +81,7 @@ It uses [Machine-Learning-Based PV Forecast](https://github.com/dominikamann/ha-
 
 ---
 
-Many thanks to the community of https://community.home-assistant.io/t/tibber-schedul-prices-upcoming-24-hours-prices/391565 who did all the initial work to achieve this. Especially to BerriJ (https://community.home-assistant.io/u/berrij/summary) who published the original code for it.
-
----
-
+<sub>Original idea: [BerriJ](https://community.home-assistant.io/u/berrij/summary) in the
+[Home Assistant community](https://community.home-assistant.io/t/tibber-schedul-prices-upcoming-24-hours-prices/391565).</sub>
 
 <p align="center">Proudly provided by <a href="https://amannlabs.eu">amannlabs.eu</a></p>
