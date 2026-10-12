@@ -17,7 +17,7 @@ apex_config:
       enabled: true
 header:
   show: true
-  title: Strompreis
+  title: Electricity price
   show_states: true
   colorize_states: true
   standard_format: false
@@ -34,7 +34,7 @@ yaxis:
 series:
   # Thin line through all prices; connects the coloured segments
   - entity: sensor.tibber_price_data
-    name: Preis
+    name: Price
     unit: ct/kWh
     color: 9E9E9E
     type: line
@@ -50,9 +50,9 @@ series:
       const data = prices.map(p => [new Date(p.startsAt).getTime(), p.total * 100]);
       if (data.length > 1) data.push([2 * data[data.length - 1][0] - data[data.length - 2][0], data[data.length - 1][1]]);
       return data;
-  # Günstig: compared with the average of the same day (±10 %)
+  # Cheap: compared with the average of the same day (±10 %)
   - entity: sensor.tibber_price_data
-    name: Günstig
+    name: Cheap
     unit: ct/kWh
     color: 43A047
     type: line
@@ -112,9 +112,9 @@ series:
         else data.push([t, null]);
       });
       return data;
-  # Teuer: compared with the average of the same day (±10 %)
+  # Expensive: compared with the average of the same day (±10 %)
   - entity: sensor.tibber_price_data
-    name: Teuer
+    name: Expensive
     unit: ct/kWh
     color: E53935
     type: line
@@ -145,7 +145,7 @@ series:
       return data;
   # Cheapest window (sensor.tibber_cheapest_window)
   - entity: sensor.tibber_price_data
-    name: Günstigstes Fenster
+    name: Cheapest window
     unit: ct/kWh
     color: 43A047
     type: area
@@ -185,7 +185,7 @@ series:
   # Header only: current price and average of the cheapest window.
   # Keep these last: series hidden from the chart shift the y-axis scaling otherwise.
   - entity: sensor.tibber_price
-    name: Aktuell
+    name: Current
     unit: ct/kWh
     color: 9E9E9E
     transform: return x * 100;
@@ -194,7 +194,7 @@ series:
       in_chart: false
   - entity: sensor.tibber_cheapest_window
     attribute: average
-    name: Günstigstes Fenster Ø
+    name: Cheapest window Ø
     unit: ct/kWh
     color: 43A047
     float_precision: 2

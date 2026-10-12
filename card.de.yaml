@@ -1,0 +1,202 @@
+type: custom:apexcharts-card
+apex_config:
+  grid:
+    show: true
+    borderColor: '#E0E0E0'
+  chart:
+    height: 260px
+  legend:
+    show: false
+  tooltip:
+    enabled: true
+    followCursor: false
+    x:
+      show: true
+      format: 'ddd HH:mm'
+    fixed:
+      enabled: true
+header:
+  show: true
+  title: Strompreis
+  show_states: true
+  colorize_states: true
+  standard_format: false
+# 6 hours back, 30 hours ahead
+graph_span: 36h
+span:
+  start: hour
+  offset: -6h
+now:
+  show: true
+  color: 9E9E9E
+yaxis:
+  - decimals: 0
+series:
+  # Thin line through all prices; connects the coloured segments
+  - entity: sensor.tibber_price_data
+    name: Preis
+    unit: ct/kWh
+    color: 9E9E9E
+    type: line
+    curve: stepline
+    stroke_width: 1
+    extend_to: false
+    float_precision: 2
+    show:
+      in_header: false
+      legend_value: false
+    data_generator: |
+      const prices = (entity.attributes.today || []).concat(entity.attributes.tomorrow || []);
+      const data = prices.map(p => [new Date(p.startsAt).getTime(), p.total * 100]);
+      if (data.length > 1) data.push([2 * data[data.length - 1][0] - data[data.length - 2][0], data[data.length - 1][1]]);
+      return data;
+  # Günstig: compared with the average of the same day (±10 %)
+  - entity: sensor.tibber_price_data
+    name: Günstig
+    unit: ct/kWh
+    color: 43A047
+    type: line
+    curve: stepline
+    stroke_width: 4
+    extend_to: false
+    float_precision: 2
+    show:
+      in_header: false
+      legend_value: false
+    data_generator: |
+      const cls = 'cheap';
+      const prices = (entity.attributes.today || []).concat(entity.attributes.tomorrow || []);
+      const days = {};
+      prices.forEach(p => (days[p.startsAt.slice(0, 10)] ??= []).push(p.total));
+      const avg = d => days[d].reduce((a, b) => a + b, 0) / days[d].length;
+      const level = p => {
+        const a = avg(p.startsAt.slice(0, 10));
+        return p.total <= a - 0.1 * Math.abs(a) ? 'cheap' : p.total >= a + 0.1 * Math.abs(a) ? 'expensive' : 'normal';
+      };
+      const data = [];
+      prices.forEach((p, i) => {
+        const t = new Date(p.startsAt).getTime();
+        const next = i + 1 < prices.length ? new Date(prices[i + 1].startsAt).getTime() : 2 * t - new Date(prices[i - 1]?.startsAt ?? t - 900000).getTime();
+        if (level(p) === cls) data.push([t, p.total * 100], [next - 1, p.total * 100]);
+        else data.push([t, null]);
+      });
+      return data;
+  # Normal: compared with the average of the same day (±10 %)
+  - entity: sensor.tibber_price_data
+    name: Normal
+    unit: ct/kWh
+    color: FBC02D
+    type: line
+    curve: stepline
+    stroke_width: 4
+    extend_to: false
+    float_precision: 2
+    show:
+      in_header: false
+      legend_value: false
+    data_generator: |
+      const cls = 'normal';
+      const prices = (entity.attributes.today || []).concat(entity.attributes.tomorrow || []);
+      const days = {};
+      prices.forEach(p => (days[p.startsAt.slice(0, 10)] ??= []).push(p.total));
+      const avg = d => days[d].reduce((a, b) => a + b, 0) / days[d].length;
+      const level = p => {
+        const a = avg(p.startsAt.slice(0, 10));
+        return p.total <= a - 0.1 * Math.abs(a) ? 'cheap' : p.total >= a + 0.1 * Math.abs(a) ? 'expensive' : 'normal';
+      };
+      const data = [];
+      prices.forEach((p, i) => {
+        const t = new Date(p.startsAt).getTime();
+        const next = i + 1 < prices.length ? new Date(prices[i + 1].startsAt).getTime() : 2 * t - new Date(prices[i - 1]?.startsAt ?? t - 900000).getTime();
+        if (level(p) === cls) data.push([t, p.total * 100], [next - 1, p.total * 100]);
+        else data.push([t, null]);
+      });
+      return data;
+  # Teuer: compared with the average of the same day (±10 %)
+  - entity: sensor.tibber_price_data
+    name: Teuer
+    unit: ct/kWh
+    color: E53935
+    type: line
+    curve: stepline
+    stroke_width: 4
+    extend_to: false
+    float_precision: 2
+    show:
+      in_header: false
+      legend_value: false
+    data_generator: |
+      const cls = 'expensive';
+      const prices = (entity.attributes.today || []).concat(entity.attributes.tomorrow || []);
+      const days = {};
+      prices.forEach(p => (days[p.startsAt.slice(0, 10)] ??= []).push(p.total));
+      const avg = d => days[d].reduce((a, b) => a + b, 0) / days[d].length;
+      const level = p => {
+        const a = avg(p.startsAt.slice(0, 10));
+        return p.total <= a - 0.1 * Math.abs(a) ? 'cheap' : p.total >= a + 0.1 * Math.abs(a) ? 'expensive' : 'normal';
+      };
+      const data = [];
+      prices.forEach((p, i) => {
+        const t = new Date(p.startsAt).getTime();
+        const next = i + 1 < prices.length ? new Date(prices[i + 1].startsAt).getTime() : 2 * t - new Date(prices[i - 1]?.startsAt ?? t - 900000).getTime();
+        if (level(p) === cls) data.push([t, p.total * 100], [next - 1, p.total * 100]);
+        else data.push([t, null]);
+      });
+      return data;
+  # Cheapest window (sensor.tibber_cheapest_window)
+  - entity: sensor.tibber_price_data
+    name: Günstigstes Fenster
+    unit: ct/kWh
+    color: 43A047
+    type: area
+    curve: stepline
+    opacity: 0.2
+    stroke_width: 0
+    extend_to: false
+    float_precision: 2
+    show:
+      in_header: false
+      legend_value: false
+    data_generator: |
+      const w = hass.states['sensor.tibber_cheapest_window'];
+      if (!w || !w.attributes.end) return [];
+      const s = new Date(w.state).getTime(), e = new Date(w.attributes.end).getTime();
+      const prices = (entity.attributes.today || []).concat(entity.attributes.tomorrow || []);
+      const data = prices
+        .filter(p => { const t = new Date(p.startsAt).getTime(); return t >= s && t < e; })
+        .map(p => [new Date(p.startsAt).getTime(), p.total * 100]);
+      if (data.length) data.push([e, data[data.length - 1][1]]);
+      return data;
+  # Price limit (input_number.tibber_price_limit, 0 = off)
+  - entity: input_number.tibber_price_limit
+    name: Limit
+    unit: ct/kWh
+    color: B71C1C
+    type: line
+    stroke_width: 1
+    stroke_dash: 6
+    extend_to: false
+    show:
+      in_header: false
+      legend_value: false
+    data_generator: |
+      const limit = parseFloat(entity.state);
+      return limit > 0 ? [[start.getTime(), limit], [end.getTime(), limit]] : [];
+  # Header only: current price and average of the cheapest window.
+  # Keep these last: series hidden from the chart shift the y-axis scaling otherwise.
+  - entity: sensor.tibber_price
+    name: Aktuell
+    unit: ct/kWh
+    color: 9E9E9E
+    transform: return x * 100;
+    float_precision: 2
+    show:
+      in_chart: false
+  - entity: sensor.tibber_cheapest_window
+    attribute: average
+    name: Günstigstes Fenster Ø
+    unit: ct/kWh
+    color: 43A047
+    float_precision: 2
+    show:
+      in_chart: false

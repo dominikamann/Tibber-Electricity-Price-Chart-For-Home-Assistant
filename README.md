@@ -1,7 +1,11 @@
 # Tibber-Electricity-Price-Chart-For-Home-Assistant
+**English** | [Deutsch](README.de.md)
+
 A way how you can view the current and future electricity price of your Tibber.com contract in Home Assistant.
 
 <img src="images/card.png" alt="Price chart" width="480">
+
+<sub>Screenshots show the German version of the cards.</sub>
 
 - **15-minute prices** (`QUARTER_HOURLY`), matching the quarter-hourly day-ahead market. Every price is
   plotted at its own `startsAt` time, so the chart also stays correct on daylight-saving days.
@@ -30,6 +34,7 @@ A way how you can view the current and future electricity price of your Tibber.c
  4. Install https://github.com/RomRider/apexcharts-card over HACS
  5. Restart your Home Assistant instance
  6. Go to any dashboard you wish, add a new card and paste in the code of the `card.yaml` file
+    (German labels: `card.de.yaml`)
 
 If your `configuration.yaml` already has a `recorder:` section with `exclude:`, Home Assistant reports a
 conflict. Then move the `recorder:` part of the package into your existing `exclude:`.
@@ -62,7 +67,7 @@ dashboard (*Settings → Dashboards → Energy*, price of the grid consumption) 
 `card-pv.yaml` shows the estimated PV production next to the price (right axis, kW). An expensive hour is
 no problem when plenty of sun is coming.
 
-<img src="images/card-pv.png" alt="Price chart with PV forecast" width="340">
+<img src="images/card-pv.png" alt="Price chart with PV forecast" width="480">
 
 - PV in blue, so it does not mix with the price colours
 - PV forecast (median) as a light blue area, the optimistic forecast (P90) as a pale area behind it and the
@@ -74,10 +79,10 @@ It uses [Machine-Learning-Based PV Forecast](https://github.com/dominikamann/ha-
 
  1. Set up the price chart as described above
  2. Install and configure [Machine-Learning-Based PV Forecast](https://github.com/dominikamann/ha-machine-learning-based-pv-forecast)
- 3. Paste the code of `card-pv.yaml` into a new card
+ 3. Paste the code of `card-pv.yaml` (German labels: `card-pv.de.yaml`) into a new card
  4. Replace `sensor.YOUR_PV_POWER` with your PV power sensor (in W; if it is in kW, remove the `transform` line)
  5. If your forecast entity is not called `sensor.pv_forecast_total_forecast_curve` (it depends on your Home
-    Assistant language), adjust it. Use the curve of a single plant instead of the total if you like.
+    Assistant language, in German it is `sensor.pv_forecast_total_prognoseverlauf`), adjust it. Use the curve of a single plant instead of the total if you like.
 
 ---
 

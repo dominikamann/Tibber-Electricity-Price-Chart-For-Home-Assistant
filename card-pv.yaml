@@ -9,8 +9,8 @@ apex_config:
   legend:
     show: true
     customLegendItems:
-      - PV-Prognose (P10–P90)
-      - PV tatsächlich
+      - PV forecast (P10–P90)
+      - PV actual
     markers:
       fillColors:
         - '#64B5F6'
@@ -30,7 +30,7 @@ apex_config:
       enabled: true
 header:
   show: true
-  title: Strompreis & PV-Prognose
+  title: Electricity price & PV forecast
   show_states: true
   colorize_states: true
   standard_format: false
@@ -58,7 +58,7 @@ yaxis:
 series:
   # Thin line through all prices; connects the coloured segments
   - entity: sensor.tibber_price_data
-    name: Preis
+    name: Price
     yaxis_id: price
     unit: ct/kWh
     color: 9E9E9E
@@ -75,9 +75,9 @@ series:
       const data = prices.map(p => [new Date(p.startsAt).getTime(), p.total * 100]);
       if (data.length > 1) data.push([2 * data[data.length - 1][0] - data[data.length - 2][0], data[data.length - 1][1]]);
       return data;
-  # Günstig: compared with the average of the same day (±10 %)
+  # Cheap: compared with the average of the same day (±10 %)
   - entity: sensor.tibber_price_data
-    name: Günstig
+    name: Cheap
     yaxis_id: price
     unit: ct/kWh
     color: 43A047
@@ -139,9 +139,9 @@ series:
         else data.push([t, null]);
       });
       return data;
-  # Teuer: compared with the average of the same day (±10 %)
+  # Expensive: compared with the average of the same day (±10 %)
   - entity: sensor.tibber_price_data
-    name: Teuer
+    name: Expensive
     yaxis_id: price
     unit: ct/kWh
     color: E53935
@@ -173,7 +173,7 @@ series:
       return data;
   # Cheapest window (sensor.tibber_cheapest_window)
   - entity: sensor.tibber_price_data
-    name: Günstigstes Fenster
+    name: Cheapest window
     yaxis_id: price
     unit: ct/kWh
     color: 43A047
@@ -215,7 +215,7 @@ series:
   # PV forecast from https://github.com/dominikamann/ha-machine-learning-based-pv-forecast
   # 15-minute values until now + 24 h, hourly values after that.
   - entity: sensor.pv_forecast_total_forecast_curve
-    name: PV optimistisch (P90)
+    name: PV optimistic (P90)
     yaxis_id: pv
     unit: kW
     color: 64B5F6
@@ -238,7 +238,7 @@ series:
         .filter(p => p[0] > last);
       return quarter.concat(hourly);
   - entity: sensor.pv_forecast_total_forecast_curve
-    name: PV-Prognose
+    name: PV forecast
     yaxis_id: pv
     unit: kW
     color: 64B5F6
@@ -261,7 +261,7 @@ series:
         .filter(p => p[0] > last);
       return quarter.concat(hourly);
   - entity: sensor.pv_forecast_total_forecast_curve
-    name: PV pessimistisch (P10)
+    name: PV pessimistic (P10)
     yaxis_id: pv
     unit: kW
     color: 64B5F6
@@ -285,7 +285,7 @@ series:
       return quarter.concat(hourly);
   # Actual PV production. Replace with your PV power sensor (in W; drop the transform if it is in kW).
   - entity: sensor.YOUR_PV_POWER
-    name: PV tatsächlich
+    name: PV actual
     yaxis_id: pv
     unit: kW
     color: 1E88E5
@@ -303,7 +303,7 @@ series:
   # Header only: current price and average of the cheapest window.
   # Keep these last: series hidden from the chart shift the y-axis scaling otherwise.
   - entity: sensor.tibber_price
-    name: Aktuell
+    name: Current
     yaxis_id: price
     unit: ct/kWh
     color: 9E9E9E
@@ -313,7 +313,7 @@ series:
       in_chart: false
   - entity: sensor.tibber_cheapest_window
     attribute: average
-    name: Günstigstes Fenster Ø
+    name: Cheapest window Ø
     yaxis_id: price
     unit: ct/kWh
     color: 43A047
@@ -322,7 +322,7 @@ series:
       in_chart: false
   # Optional: base load of your house. Where the PV curve is above it, the price hardly matters.
   # - entity: sensor.pv_forecast_total_forecast_curve
-  #   name: Grundlast
+  #   name: Base load
   #   yaxis_id: pv
   #   unit: kW
   #   color: 607D8B
