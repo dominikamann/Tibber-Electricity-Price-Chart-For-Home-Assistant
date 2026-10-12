@@ -3,7 +3,7 @@
 
 Zeigt den aktuellen und kommenden Strompreis deines Tibber.com-Vertrags in Home Assistant an.
 
-<img src="images/card.png" alt="Strompreis-Chart" width="480">
+<img src="images/card.png" alt="Strompreis-Chart" width="100%">
 
 - **15-Minuten-Preise** (`QUARTER_HOURLY`), passend zum viertelstündlichen Day-Ahead-Markt. Jeder Preis wird
   zu seiner eigenen `startsAt`-Zeit gezeichnet, dadurch stimmt der Chart auch an Tagen mit Zeitumstellung.
@@ -67,7 +67,7 @@ nichts einbindet), dann die Schritte oben ausführen. Die alte Entität `sensor.
 `card-pv.de.yaml` zeigt die erwartete PV-Produktion neben dem Preis (rechte Achse, kW). Eine teure Stunde ist
 kein Problem, wenn viel Sonne kommt.
 
-<img src="images/card-pv.png" alt="Strompreis-Chart mit PV-Prognose" width="480">
+<img src="images/card-pv.png" alt="Strompreis-Chart mit PV-Prognose" width="100%">
 
 - PV in Blau, damit es sich nicht mit den Preisfarben mischt
 - PV-Prognose (Median) als hellblaue Fläche, die optimistische Prognose (P90) als blasse Fläche dahinter und

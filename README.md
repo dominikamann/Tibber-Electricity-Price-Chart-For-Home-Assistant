@@ -3,7 +3,7 @@
 
 A way how you can view the current and future electricity price of your Tibber.com contract in Home Assistant.
 
-<img src="images/card.png" alt="Price chart" width="480">
+<img src="images/card.png" alt="Price chart" width="100%">
 
 <sub>Screenshots show the German version of the cards.</sub>
 
@@ -67,7 +67,7 @@ dashboard (*Settings → Dashboards → Energy*, price of the grid consumption) 
 `card-pv.yaml` shows the estimated PV production next to the price (right axis, kW). An expensive hour is
 no problem when plenty of sun is coming.
 
-<img src="images/card-pv.png" alt="Price chart with PV forecast" width="480">
+<img src="images/card-pv.png" alt="Price chart with PV forecast" width="100%">
 
 - PV in blue, so it does not mix with the price colours
 - PV forecast (median) as a light blue area, the optimistic forecast (P90) as a pale area behind it and the
