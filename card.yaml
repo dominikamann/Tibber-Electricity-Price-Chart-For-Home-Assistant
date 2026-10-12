@@ -54,11 +54,10 @@ series:
     stroke_width: 4
     float_precision: 2
     data_generator: |
-      const noon = new Date()
-      noon.setHours(0, 0, 0, 0)
-      const prices = entity.attributes.today.concat(entity.attributes.tomorrow);
-      const data = [];
-      for(let i = 0; i < prices.length; i++) {
-        data.push([noon.getTime() + i * 1000 * 3600, prices[i].total * 100])
+      const prices = (entity.attributes.today || []).concat(entity.attributes.tomorrow || []);
+      const data = prices.map(p => [new Date(p.startsAt).getTime(), p.total * 100]);
+      if (data.length > 1) {
+        const last = data[data.length - 1];
+        data.push([last[0] + (last[0] - data[data.length - 2][0]), last[1]]);
       }
       return data;

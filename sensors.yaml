@@ -3,15 +3,15 @@
     name: Tibber Prices
     resource: https://api.tibber.com/v1-beta/gql
     method: POST
-    payload: '{ "query": "{ viewer { homes { currentSubscription { status priceInfo { current { total } today { total } tomorrow { total } } } } } }" }'
+    payload: '{ "query": "{ viewer { homes { currentSubscription { priceInfo(resolution: QUARTER_HOURLY) { current { total } today { total startsAt } tomorrow { total startsAt } } } } } }" }'
     json_attributes_path: "$.data.viewer.homes[0].currentSubscription.priceInfo"
     json_attributes:
       - today
       - tomorrow
     value_template: "{{ value_json.data.viewer.homes[0].currentSubscription.priceInfo.current.total | float }}"
-    scan_interval: 30
+    scan_interval: 60
     headers:
-      Authorization: ADD_YOUR_TOKEN_HERE
+      Authorization: Bearer ADD_YOUR_TOKEN_HERE
       Content-Type: application/json
       User-Agent: REST
     unit_of_measurement: EUR/kWh

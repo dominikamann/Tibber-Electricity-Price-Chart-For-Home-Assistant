@@ -1,0 +1,106 @@
+type: custom:apexcharts-card
+experimental:
+  color_threshold: true
+apex_config:
+  grid:
+    show: true
+    borderColor: '#E0E0E0'
+  chart:
+    height: 280px
+  legend:
+    show: true
+  tooltip:
+    enabled: true
+    shared: true
+    followCursor: false
+    x:
+      show: true
+      format: 'ddd HH:mm'
+    fixed:
+      enabled: true
+header:
+  show: true
+  title: Strompreis & PV-Prognose
+  show_states: true
+  colorize_states: true
+  standard_format: false
+graph_span: 48h
+now:
+  show: true
+  color: 9E9E9E
+span:
+  start: day
+yaxis:
+  - id: price
+    decimals: 0
+    apex_config:
+      title:
+        text: Cent/kWh
+  - id: pv
+    opposite: true
+    min: 0
+    decimals: 1
+    apex_config:
+      title:
+        text: kW
+series:
+  - entity: sensor.tibber_prices
+    name: Strompreis
+    yaxis_id: price
+    unit: Cent/kWh
+    show:
+      in_header: before_now
+      name_in_header: false
+      legend_value: false
+    color_threshold:
+      - value: 0
+        color: 4DD0E1
+      - value: 10
+        color: 26A69A
+      - value: 15
+        color: 4CAF50
+      - value: 20
+        color: 7CB342
+      - value: 25
+        color: FBC02D
+      - value: 30
+        color: EF6C00
+      - value: 40
+        color: B71C1C
+    type: line
+    curve: stepline
+    extend_to: false
+    stroke_width: 4
+    float_precision: 2
+    data_generator: |
+      const prices = (entity.attributes.today || []).concat(entity.attributes.tomorrow || []);
+      const data = prices.map(p => [new Date(p.startsAt).getTime(), p.total * 100]);
+      if (data.length > 1) {
+        const last = data[data.length - 1];
+        data.push([last[0] + (last[0] - data[data.length - 2][0]), last[1]]);
+      }
+      return data;
+  # PV forecast from https://github.com/dominikamann/ha-machine-learning-based-pv-forecast
+  # 15-minute values until now + 24 h, hourly values after that (up to 72 h).
+  - entity: sensor.pv_forecast_total_forecast_curve
+    name: PV-Prognose
+    yaxis_id: pv
+    unit: kW
+    color: FFB300
+    type: area
+    curve: smooth
+    opacity: 0.25
+    stroke_width: 2
+    extend_to: false
+    float_precision: 2
+    show:
+      in_header: false
+      legend_value: false
+    data_generator: |
+      const quarter = (entity.attributes.quarters || [])
+        .map(r => [new Date(r.time).getTime() + 7.5 * 60000, r.p50 / 1000]);
+      const end = quarter.length ? quarter[quarter.length - 1][0] : 0;
+      const hourly = (entity.attributes.hourly || [])
+        .map(r => [new Date(r.time).getTime() + 30 * 60000, r.p50 / 1000])
+        .filter(p => p[0] > end);
+      return quarter.concat(hourly);
