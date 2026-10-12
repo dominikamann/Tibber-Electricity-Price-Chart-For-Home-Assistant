@@ -103,8 +103,11 @@ series:
       prices.forEach((p, i) => {
         const t = new Date(p.startsAt).getTime();
         const next = i + 1 < prices.length ? new Date(prices[i + 1].startsAt).getTime() : 2 * t - new Date(prices[i - 1]?.startsAt ?? t - 900000).getTime();
-        if (level(p) === cls) data.push([t, p.total * 100], [next - 1, p.total * 100]);
-        else data.push([t, null]);
+        if (level(p) === cls) {
+          data.push([t, p.total * 100], [next - 1, p.total * 100]);
+          // Draw the step to a differently coloured next price in this colour, so the segments connect
+          if (prices[i + 1] && level(prices[i + 1]) !== cls) data.push([next, prices[i + 1].total * 100]);
+        } else data.push([t, null]);
       });
       return data;
   # Normal: compared with the average of the same day (±10 %)
@@ -135,8 +138,11 @@ series:
       prices.forEach((p, i) => {
         const t = new Date(p.startsAt).getTime();
         const next = i + 1 < prices.length ? new Date(prices[i + 1].startsAt).getTime() : 2 * t - new Date(prices[i - 1]?.startsAt ?? t - 900000).getTime();
-        if (level(p) === cls) data.push([t, p.total * 100], [next - 1, p.total * 100]);
-        else data.push([t, null]);
+        if (level(p) === cls) {
+          data.push([t, p.total * 100], [next - 1, p.total * 100]);
+          // Draw the step to a differently coloured next price in this colour, so the segments connect
+          if (prices[i + 1] && level(prices[i + 1]) !== cls) data.push([next, prices[i + 1].total * 100]);
+        } else data.push([t, null]);
       });
       return data;
   # Teuer: compared with the average of the same day (±10 %)
@@ -167,8 +173,11 @@ series:
       prices.forEach((p, i) => {
         const t = new Date(p.startsAt).getTime();
         const next = i + 1 < prices.length ? new Date(prices[i + 1].startsAt).getTime() : 2 * t - new Date(prices[i - 1]?.startsAt ?? t - 900000).getTime();
-        if (level(p) === cls) data.push([t, p.total * 100], [next - 1, p.total * 100]);
-        else data.push([t, null]);
+        if (level(p) === cls) {
+          data.push([t, p.total * 100], [next - 1, p.total * 100]);
+          // Draw the step to a differently coloured next price in this colour, so the segments connect
+          if (prices[i + 1] && level(prices[i + 1]) !== cls) data.push([next, prices[i + 1].total * 100]);
+        } else data.push([t, null]);
       });
       return data;
   # Cheapest window (sensor.tibber_cheapest_window)
