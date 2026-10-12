@@ -1,0 +1,123 @@
+# Tibber prices for https://github.com/dominikamann/Tibber-Electricity-Price-Chart-For-Home-Assistant
+#
+# Needs in secrets.yaml (keep the "Bearer " in front of the token):
+#   tibber_token: "Bearer YOUR_TIBBER_DEVELOPER_TOKEN"
+
+# All prices of today and tomorrow (15-minute slots). Fetched every 15 minutes; tomorrow's prices
+# are published around 13:00. The state is the number of known slots.
+rest:
+  - resource: https://api.tibber.com/v1-beta/gql
+    method: POST
+    scan_interval: 900
+    headers:
+      Authorization: !secret tibber_token
+      Content-Type: application/json
+      User-Agent: REST
+    payload: '{ "query": "{ viewer { homes { currentSubscription { priceInfo(resolution: QUARTER_HOURLY) { today { total startsAt } tomorrow { total startsAt } } } } } }" }'
+    sensor:
+      - name: Tibber Price Data
+        unique_id: tibber_price_data
+        json_attributes_path: "$.data.viewer.homes[0].currentSubscription.priceInfo"
+        json_attributes:
+          - today
+          - tomorrow
+        value_template: >-
+          {% set info = value_json.data.viewer.homes[0].currentSubscription.priceInfo %}
+          {{ (info.today or []) | count + (info.tomorrow or []) | count }}
+
+# The price list is large and only needed for the chart: keep it out of the database.
+# If your configuration.yaml already has "recorder: exclude:", add the entity there instead.
+recorder:
+  exclude:
+    entities:
+      - sensor.tibber_price_data
+
+input_number:
+  # Horizontal limit line in the chart (0 = off). Also usable in automations.
+  tibber_price_limit:
+    name: Tibber price limit
+    icon: mdi:cash-lock
+    unit_of_measurement: ct/kWh
+    min: 0
+    max: 100
+    step: 0.5
+    mode: box
+  # Length of the cheapest window that is searched for.
+  tibber_cheapest_window_hours:
+    name: Tibber cheapest window length
+    icon: mdi:timer-outline
+    unit_of_measurement: h
+    min: 0.25
+    max: 12
+    step: 0.25
+    initial: 2
+
+template:
+  # Current price; templates with now() update every minute without calling the API.
+  - sensor:
+      - name: Tibber Price
+        unique_id: tibber_price
+        unit_of_measurement: EUR/kWh
+        state_class: measurement
+        icon: mdi:cash
+        state: >-
+          {% set ns = namespace(price=none) %}
+          {% set prices = (state_attr('sensor.tibber_price_data', 'today') or [])
+             + (state_attr('sensor.tibber_price_data', 'tomorrow') or []) %}
+          {% for p in prices if as_datetime(p.startsAt) <= now() %}
+            {% set ns.price = p.total %}
+          {% endfor %}
+          {{ ns.price }}
+        availability: >-
+          {{ (state_attr('sensor.tibber_price_data', 'today') or []) | count > 0 }}
+
+  # Cheapest coherent window from now on (length: input_number.tibber_cheapest_window_hours).
+  # State: start time. Attributes: end and average price in ct/kWh.
+  - trigger:
+      - trigger: homeassistant
+        event: start
+      - trigger: event
+        event_type: event_template_reloaded
+      - trigger: time_pattern
+        minutes: /15
+      - trigger: state
+        entity_id:
+          - sensor.tibber_price_data
+          - input_number.tibber_cheapest_window_hours
+    action:
+      - variables:
+          window: >-
+            {%- set hours = states('input_number.tibber_cheapest_window_hours') | float(2) -%}
+            {%- set prices = (state_attr('sensor.tibber_price_data', 'today') or [])
+               + (state_attr('sensor.tibber_price_data', 'tomorrow') or []) -%}
+            {%- set ns = namespace(best=none, avg=0) -%}
+            {%- if prices | count > 1 -%}
+              {%- set slot = as_timestamp(prices[1].startsAt) - as_timestamp(prices[0].startsAt) -%}
+              {%- set n = [(hours * 3600 / slot) | round(0, 'ceil') | int, 1] | max -%}
+              {%- for i in range(prices | count - n + 1) -%}
+                {%- if as_timestamp(prices[i].startsAt) + slot > now().timestamp() -%}
+                  {%- set avg = (prices[i:i + n] | map(attribute='total') | sum) / n -%}
+                  {%- if ns.best is none or avg < ns.avg -%}
+                    {%- set ns.best = i -%}
+                    {%- set ns.avg = avg -%}
+                  {%- endif -%}
+                {%- endif -%}
+              {%- endfor -%}
+            {%- endif -%}
+            {%- if ns.best is none -%}
+              {{ {} }}
+            {%- else -%}
+              {{ {'start': prices[ns.best].startsAt,
+                  'end': (as_datetime(prices[ns.best].startsAt) + timedelta(seconds=n * slot)).isoformat(),
+                  'average': (ns.avg * 100) | round(2)} }}
+            {%- endif -%}
+    sensor:
+      - name: Tibber Cheapest Window
+        unique_id: tibber_cheapest_window
+        device_class: timestamp
+        icon: mdi:piggy-bank-outline
+        state: "{{ window.start if window else none }}"
+        availability: "{{ window != {} }}"
+        attributes:
+          end: "{{ window.end if window else none }}"
+          average: "{{ window.average if window else none }}"
